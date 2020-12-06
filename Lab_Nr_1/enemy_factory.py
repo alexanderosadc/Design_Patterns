@@ -2,8 +2,7 @@ import abc
 from abc import ABC
 from random import randint
 
-from EventManager import event_manager
-
+from event_manager import event_manager
 
 class Enemy(metaclass=abc.ABCMeta):
     def __init__(self):
@@ -27,6 +26,7 @@ class Enemy(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_hit(self, hit_point):
         pass
+
 
 
 class BossZombie(Enemy, ABC):
@@ -81,6 +81,11 @@ class EnemyPool:
         elif type_of_enemy == 'Simple':
             self._pool_of_simple_zombies.pop(enemy)
 
+    def get_random_alive_zombie(self):
+        length = len(self._pool_of_simple_zombies)
+        if length > 0:
+            return self._pool_of_simple_zombies[randint(0, length - 1)]
+
 class EnemyFactory:
 
     def spawn_zombie(self, name_of_enemy):
@@ -91,7 +96,7 @@ class EnemyFactory:
             print('Simple')
             return SimpleZombie
 
-class SpawnManager:
+class EnemySpawnManager:
     def __init__(self):
         self.pool_manager = EnemyPool()
         self.enemy_factory = EnemyFactory()
@@ -103,9 +108,11 @@ class SpawnManager:
         while number_of_enemies > 0:
             type_of_zombie = type_of_zombies[randint(0, 1)]
             enemy = self.enemy_factory.spawn_zombie(type_of_zombie)
-            self.pool_manager.add_zombie_to_pool(enemy)
+            self.pool_manager.add_zombie_to_pool(enemy, type_of_zombie)
             number_of_enemies -= 1
 
     def update_zombie_states(self, type_of_enemy):
-        self.pool_manager.find_dead_zombie()
+        self.pool_manager.find_dead_zombie(type_of_enemy)
 
+    def get_random_zombie(self) -> SimpleZombie:
+        self.pool_manager.get_random_alive_zombie()
