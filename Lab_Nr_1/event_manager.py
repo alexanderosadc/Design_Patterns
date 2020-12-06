@@ -42,4 +42,5 @@ class EventManager:
 
 
 event_manager = EventManager()
-event_manager.create_event('show_print')
+event_manager.create_event('enemy_dead')
+event_manager.create_event('attack_player')
